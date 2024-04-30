@@ -1,8 +1,6 @@
 
-## Transaction Service 
-This repo contains Transaction Service with .NET8 Web API and responsible from user balance and transaction CRUD.
-
-
+## Topup Service 
+This repo contains Topup Service with .NET8 Web API and responsible from user beneficiary CRUD and topup operations
 
 **Prerequisities**
 
@@ -10,6 +8,8 @@ This repo contains Transaction Service with .NET8 Web API and responsible from u
 
 MSSQL Express must be installed and connection string must be modified for local setup for TransactionService project 
 and after that in TransactionService.DBMigration project, same connection string must be updated and project must be run locally to create database and seed data.
+
+Transaction service locally must be up and running from https://localhost:81 
 
 ## Build, Test, Run
 
@@ -24,21 +24,4 @@ Run the following commands from the folder containing the .sln file in order to 
 ## Local debugging and testing
 
 **Swagger URL** 
-`http://localhost:81/swagger/index.html` 
-
-**CURLs**
-
-`
-curl --location 'https://localhost:81/api/v1/transaction' \
---header 'Accept: application/json' \
---header 'Content-Type: application/json' \
---data '{
-  "userId": 1,
-  "amount": 50,
-  "currency": "AED",
-  "transactionType": 1
-}'
-`
-
-`
-curl --location 'https://localhost:81/api/v1/balance/1'`
+`https://localhost:88/swagger/index.html`
