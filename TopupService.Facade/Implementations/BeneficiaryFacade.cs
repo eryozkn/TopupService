@@ -51,7 +51,8 @@ namespace TopupService.Facade.Implementations
 
                 foreach (var beneficiary in userBeneficiaries)
                 {
-                    beneficiaries.Add(MapFromBeneficiaryEntity(beneficiary));
+                    var beneficiaryDomainModel = MapFromBeneficiaryEntity(beneficiary);
+                    beneficiaries.Add(beneficiaryDomainModel);
                 }
 
                 return () => beneficiaries;

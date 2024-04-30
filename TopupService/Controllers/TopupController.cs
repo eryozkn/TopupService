@@ -114,7 +114,7 @@ namespace TopupService.Controllers
 
                 foreach(var beneficiary in beneficiaryList)
                 {
-                    beneficiaryResponseList.ToList().Add(new BeneficiaryResponse()
+                    beneficiaryResponseList.Add(new BeneficiaryResponse()
                     {
                         UserId = beneficiary.UserId,
                         NickName = beneficiary.NickName,
