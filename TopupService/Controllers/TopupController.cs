@@ -11,34 +11,12 @@ namespace TopupService.Controllers
 {
     [Route("api/v1/topup")]
     [ApiController]
-    public class TopupController(ITopupFacade topupfacade, IBeneficiaryFacade beneficiaryFacade, ILogger<TopupController> logger, IConfiguration configuration) : ControllerBase
+    public class TopupController(ITopupFacade topupfacade, ILogger<TopupController> logger, IConfiguration configuration) : ControllerBase
     {
         private readonly ITopupFacade _topupfacade = topupfacade;
-        private readonly IBeneficiaryFacade _beneficiaryFacade = beneficiaryFacade;
         private readonly ILogger<TopupController> _logger = logger;
 
         private readonly IConfiguration _configuration = configuration;
-
-        [HttpPost("beneficiary")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BeneficiaryResponse>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorResponse))]
-        public async Task<ActionResult> AddBeneficiary([FromBody] AddBeneficiaryRequest request)
-        {
-            var benefiary = new Beneficiary()
-            {
-                UserId = request.UserId,
-                PhoneNumber = request.PhoneNumber,
-                NickName = request.NickName,
-                IsActive = true,
-            };
-
-            var beneficiaryLimit = _configuration.GetSection("BeneficiaryLimit").Get<int>();
-
-            var beneficiaryResult = await _beneficiaryFacade.AddBeneficiary(benefiary, beneficiaryLimit);
-
-            return MapBeneficiaryResponse(beneficiaryResult);
-        }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TopupResponse))]
@@ -79,52 +57,6 @@ namespace TopupService.Controllers
             );
 
             return MapTopupResponse(topupResult);
-        }
-
-        [HttpGet("beneficiaries/{userId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BeneficiaryResponse>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorResponse))]
-        public ActionResult GetActiveBeneficiaries([FromRoute] long userId)
-        {
-            var userBeneficiaries = _beneficiaryFacade.GetUserActiveBeneficiaries(userId);
-
-            if (userBeneficiaries.IsRight()) // error thrown
-            {
-                var error = userBeneficiaries.Right();
-
-                if (error.Code == ErrorCodes.InternalServerError)
-                {
-                    return StatusCode(500, MapErrorResponse(error));
-                }
-                else
-                {
-                    return BadRequest(
-                    new ErrorResponse()
-                    {
-                        Code = error.Code,
-                        Message = error.Message
-                    });
-                }
-            }
-            else
-            {
-                var beneficiaryList = userBeneficiaries.Left();
-                List<BeneficiaryResponse> beneficiaryResponseList = [];
-
-                foreach(var beneficiary in beneficiaryList)
-                {
-                    beneficiaryResponseList.Add(new BeneficiaryResponse()
-                    {
-                        UserId = beneficiary.UserId,
-                        NickName = beneficiary.NickName,
-                        PhoneNumber = beneficiary.PhoneNumber
-                    });
-                }
-
-                return Ok(beneficiaryResponseList);
-
-            };
         }
 
         [HttpGet("options")]
@@ -168,38 +100,6 @@ namespace TopupService.Controllers
                 Code = error.Code,
                 Message = error.Message
             };
-        }
-        private ActionResult MapBeneficiaryResponse(Either<Beneficiary, Error> response)
-        {
-            if (response.IsRight()) // error thrown
-            {
-                var error = response.Right();
-
-                if (error.Code == ErrorCodes.InternalServerError)
-                {
-                    return StatusCode(500, MapErrorResponse(error));
-                }
-                else
-                {
-                    return BadRequest(
-                    new ErrorResponse()
-                    {
-                        Code = error.Code,
-                        Message = error.Message
-                    });
-                }
-            }
-            else
-            {
-                var beneficiary = response.Left();
-
-                return Ok(new BeneficiaryResponse()
-                { 
-                    UserId = beneficiary.UserId,
-                    NickName = beneficiary.NickName,
-                    PhoneNumber = beneficiary.PhoneNumber
-                });
-            }
         }
         private ActionResult MapTopupResponse(Either<Topup, Error> response)
         {
