@@ -25,3 +25,9 @@ Run the following commands from the folder containing the .sln file in order to 
 
 **Swagger URL** 
 `https://localhost:88/swagger/index.html`
+
+
+## Overall architecture of a Topup application
+
+![image](https://github.com/eryozkn/TopupService/assets/1847583/940acf01-bc41-45f9-a528-ba03c5f33e54)
+
